@@ -1,6 +1,6 @@
 <?php
 
-namespace Nimiq;
+namespace Elis;
 
 use StephenHill\Base58;
 use Elliptic\EC;
@@ -14,6 +14,7 @@ class XPub {
 
     public const HEX_VERSION = [
         'xpub' => '0488b21e',
+        'ypub' => '049d7cb2',
         'tpub' => '043587cf',
         'zpub' => '04b24746',
         'vpub' => '045f1cf6',
@@ -78,7 +79,13 @@ class XPub {
     public static function hash160(string $hex): string {
         return hash('ripemd160', hash('sha256', hex2bin($hex), TRUE));
     }
-
+    
+    public static function encode_segwit($hrp, $program): string {
+        $programChars = array_values(unpack('C*', $program));
+        $programBits = Bech32\convertBits($programChars, count($programChars), 8, 5, true);
+        return Bech32\encode($hrp, $programBits);   
+    }
+    
     public static function doubleSha256(string $hex): string {
         return hash('sha256', hash('sha256', hex2bin($hex), TRUE));
     }
@@ -162,6 +169,8 @@ class XPub {
         switch ($coin) {
             case 'btc': return $this->toBTCAddress();
             case 'eth': return $this->toETHAddress();
+            case 'trx': return $this->toTRXAddress();
+            case 'bnb': return $this->toBNBAddress();
             default: throw new \Exception('Coin type "' . $coin . '" not supported!');
         }
     }
@@ -200,7 +209,23 @@ class XPub {
 
         return '0x' . $this->encodeETHChecksum($base_address);
     }
-
+    
+    private function toTRXAddress(): string {
+        $base_address = substr($this->toETHAddress(),2);
+        $prefix = "41";
+        $address_hex = $prefix.$base_address;
+        
+        $address_hex.= substr(self::doubleSha256($address_hex), 0, 8); //Checksum
+        
+        return (new Base58())->encode(hex2bin($address_hex));
+    }
+    
+    private function toBNBAddress(): string {
+        $program = self::hash160($this->K);
+        $hrp = "bnb";
+        return self::encode_segwit($hrp, hex2bin($program));
+    }
+    
     private function encodeETHChecksum(string $base_address): string {
         $binary = $this->hex2binary(Keccak::hash($base_address, 256));
 

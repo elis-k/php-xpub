@@ -1,19 +1,15 @@
-# Nimiq XPub
+# XPub
 
-[![Build Status](https://travis-ci.com/nimiq/php-xpub.svg?branch=master)](https://travis-ci.com/nimiq/php-xpub)
+A simple class to derive address and extended public keys.
 
-A simple class to derive BTC and ETH extended public keys and addresses without GMP.
-Only the BCMath extension is required (but GMP is still used for faster calculations when available).
+Coins supported:
+- Bitcoin (Bitcoin Cash/Bitcoin SV)
+- Ethereum (Binance Smart Chain)
+- Tron
+- Binance Chain
 
-Supports `xpub`, `tpub`, `zpub` and `vpub` formats.
+Supports `xpub`, `tpub`, `zpub` and `vpub` public key formats.
 
-## Installation
-
-The Nimiq PHP Utilities are availabe via the [Packagist package registry](https://packagist.org/packages/nimiq/xpub) and can be installed with [Composer](https://getcomposer.org):
-
-```bash
-composer require nimiq/xpub
-```
 
 ### Requirements
 
@@ -24,7 +20,7 @@ composer require nimiq/xpub
 
 ```php
 # PSR-4 autoloading with composer
-use Nimiq\XPub;
+use Elis\XPub;
 
 # Create an XPub class instance from an xpub/tpub/zpub/vpub string.
 $xpub = XPub::fromString( '<xpub...>' ); // => BIP44 Original
@@ -58,16 +54,4 @@ $hashed_hex = XPub::hash160( $input_hex );
 
 # Get a double sha256
 $hashed_hex = XPub::doubleSha256( $input_hex );
-```
-
-## Development
-
-### Testing
-
-To execute the test suite run:
-
-```bash
-composer run-script test
-# or
-php test/test.php
 ```
