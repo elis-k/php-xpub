@@ -10,6 +10,8 @@ Coins supported:
 
 Supports `xpub`, `tpub`, `zpub` and `vpub` public key formats.
 
+### Install
+`composer require elis/xpub`
 
 ### Requirements
 
